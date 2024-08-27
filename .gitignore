@@ -1,0 +1,7 @@
+.venv
+.env
+node_modules
+upwork_page.html
+credentials.json
+past.html
+upwork.html
