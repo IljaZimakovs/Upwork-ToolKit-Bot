@@ -32,7 +32,7 @@ client = gspread.authorize(creds)
 # Open the Google Spreadsheet by title
 sheet_url = "https://docs.google.com/spreadsheets/d/1lqSgbqWif-iyyL6KEOunCI7TaCGgIVC7P3__btNmjIE/edit?usp=sharing"
 spreadsheet = client.open_by_url(sheet_url)
-worksheet = spreadsheet.get_worksheet(2)
+worksheet = spreadsheet.get_worksheet(3)
 
 worksheet_name = "Sheet3"
 
@@ -56,8 +56,8 @@ async def main():
     total_projects = []
     while True:
         try:
-            file_path = 'payment.html'
-            url_path = 'payment.txt'
+            file_path = 'past.html'
+            url_path = 'past.txt'
             try:
                 # Check if the file exists
                 if os.path.exists(file_path) and os.path.exists(url_path):
@@ -135,6 +135,7 @@ async def main():
                     posted_jobs = 'Unknown'
                     hire_rate = 'Unknown'  
                     
+                                                                                           
                 if soup.find(attrs={'data-qa': 'client-contract-date'}):
                     member_since = soup.find(attrs={'data-qa': 'client-contract-date'}).text.strip().replace('Member since ', '')
                 else:
@@ -156,7 +157,7 @@ async def main():
                     if 'Unanswered invites:' in item.text:
                         unanswered_invites = str(item.find(class_='value').text.replace('\n', '').strip())
                 mark = '*****************************************************************'
-                if int(interviews) < 1 and int(hires) < 1:
+                if 'Payment method verified' in soup.find(attrs={'data-test': 'AboutClientUser'}).text:
                     mark = '==================================================='
                     line = '-----------------------------------------------------------------------------------------------------'
                     message = project_title + '\n' + line + '\n' + '𝑷𝒓𝒊𝒄𝒆: ' + project_price + '\n' + '𝑷𝒐𝒔𝒕𝒆𝒅: ' + project_posted + ' from ' + posted_time + '\n' + line + '\n' '𝑷𝒓𝒐𝒋𝒆𝒄𝒕 𝑼𝑹𝑳: \n' + project_url + '\n'+ line + '\n' + '𝑳𝒐𝒄𝒂𝒕𝒊𝒐𝒏: ' + client_location + '\n' + '𝑷𝒐𝒔𝒕𝒆𝒅 𝑱𝒐𝒃𝒔: ' + posted_jobs + '\n' + '𝑯𝒊𝒓𝒆 𝑹𝒂𝒕𝒆: ' + hire_rate + '\n' + '𝑻𝒐𝒕𝒂𝒍 𝑺𝒑𝒆𝒏𝒕: ' + project_spent + '\n' + '𝑴𝒆𝒎𝒃𝒆𝒓 𝑺𝒊𝒏𝒄𝒆:  ' + member_since + "\n" + line + '\n' + '𝑫𝒆𝒔𝒄𝒓𝒊𝒑𝒕𝒊𝒐𝒏: ' + '\n' + project_description + "\n" + line + '\n' + '𝑺𝒌𝒊𝒍𝒍𝒔: ' + '\n' + project_skills + '\n' + line + '\n' + '𝑷𝒓𝒐𝒑𝒐𝒔𝒂𝒍𝒔: ' + proposals  + '\n' + '𝑳𝒂𝒔𝒕 𝒗𝒊𝒆𝒘𝒆𝒅 𝒃𝒚 𝒄𝒍𝒊𝒆𝒏𝒕: ' + viewed_time  + '\n' + '𝑯𝒊𝒓𝒆𝒔: ' + hires  + '\n' + '𝑰𝒏𝒕𝒆𝒓𝒗𝒊𝒆𝒘𝒊𝒏𝒈: ' + interviews  + '\n' + '𝑰𝒏𝒗𝒊𝒕𝒆𝒔 𝒔𝒆𝒏𝒕: ' + invites_sent  + '\n' + '𝑼𝒏𝒂𝒏𝒔𝒘𝒆𝒓𝒆𝒅 𝒊𝒏𝒗𝒊𝒕𝒆𝒔: ' + unanswered_invites + '\n' + mark
@@ -167,7 +168,7 @@ async def main():
                     if len(total_projects) > 100:
                         total_projects = total_projects[-100:]
                     print('\n')
-            time.sleep(5)
+            time.sleep(2)
         except Exception as e:
             print(f'error: {e}')
             
