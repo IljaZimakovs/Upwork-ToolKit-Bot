@@ -41,7 +41,7 @@ if worksheet is None:
     worksheet = spreadsheet.add_worksheet(title=worksheet_name, rows="100", cols="20")
 
 # Define the header names
-header_names = ["Posted", "Project Title", "Price", "Location", "Posted Jobs", "Hire Rate", "Total Spent", "Member Since", "Proposals", "Interviewing", "Invites sent", "Unasnwered invites", "Skills", "Project URL"]
+header_names = ["Posted", "Project Title", "Price", "Location", "Total Spent", "Member Since", "Proposals", "Interviewing", "Invites sent", "Unasnwered invites", "Skills", "Project URL"]
 existing_headers = worksheet.row_values(1)
 if not existing_headers:
     worksheet.insert_row(header_names, index=1)
@@ -54,10 +54,12 @@ async def send_mail(content):
 
 async def main():
     total_projects = []
+    temp_content = ''
+    temp_url = ''
     while True:
         try:
-            file_path = 'past.html'
-            url_path = 'past.txt'
+            file_path = 'payment.html'
+            url_path = 'payment.txt'
             try:
                 # Check if the file exists
                 if os.path.exists(file_path) and os.path.exists(url_path):
@@ -73,7 +75,7 @@ async def main():
                 print(f'Error: File permission Error')
                 continue
             
-            if project_url not in total_projects:
+            if project_url not in total_projects and temp_content != html_content and temp_url != project_url:
                 total_projects.append(project_url)
                 
                 soup = BeautifulSoup(html_content, 'html.parser')
@@ -128,14 +130,6 @@ async def main():
                 else:
                     project_spent = 'No Spent'
                     
-                if soup.find(attrs={'data-qa': 'client-job-posting-stats'}):
-                    posted_jobs = soup.find(attrs={'data-qa': 'client-job-posting-stats'}).find('strong').text.strip().split(' ')[0]
-                    hire_rate = soup.find(attrs={'data-qa': 'client-job-posting-stats'}).find('div').text.strip().split(' ')[0]
-                else:
-                    posted_jobs = 'Unknown'
-                    hire_rate = 'Unknown'  
-                    
-                                                                                           
                 if soup.find(attrs={'data-qa': 'client-contract-date'}):
                     member_since = soup.find(attrs={'data-qa': 'client-contract-date'}).text.strip().replace('Member since ', '')
                 else:
@@ -157,11 +151,11 @@ async def main():
                     if 'Unanswered invites:' in item.text:
                         unanswered_invites = str(item.find(class_='value').text.replace('\n', '').strip())
                 mark = '*****************************************************************'
-                if 'Payment method verified' in soup.find(attrs={'data-test': 'AboutClientUser'}).text:
+                if 'Payment method verified' in soup.text:
                     mark = '==================================================='
                     line = '-----------------------------------------------------------------------------------------------------'
-                    message = project_title + '\n' + line + '\n' + '𝑷𝒓𝒊𝒄𝒆: ' + project_price + '\n' + '𝑷𝒐𝒔𝒕𝒆𝒅: ' + project_posted + ' from ' + posted_time + '\n' + line + '\n' '𝑷𝒓𝒐𝒋𝒆𝒄𝒕 𝑼𝑹𝑳: \n' + project_url + '\n'+ line + '\n' + '𝑳𝒐𝒄𝒂𝒕𝒊𝒐𝒏: ' + client_location + '\n' + '𝑷𝒐𝒔𝒕𝒆𝒅 𝑱𝒐𝒃𝒔: ' + posted_jobs + '\n' + '𝑯𝒊𝒓𝒆 𝑹𝒂𝒕𝒆: ' + hire_rate + '\n' + '𝑻𝒐𝒕𝒂𝒍 𝑺𝒑𝒆𝒏𝒕: ' + project_spent + '\n' + '𝑴𝒆𝒎𝒃𝒆𝒓 𝑺𝒊𝒏𝒄𝒆:  ' + member_since + "\n" + line + '\n' + '𝑫𝒆𝒔𝒄𝒓𝒊𝒑𝒕𝒊𝒐𝒏: ' + '\n' + project_description + "\n" + line + '\n' + '𝑺𝒌𝒊𝒍𝒍𝒔: ' + '\n' + project_skills + '\n' + line + '\n' + '𝑷𝒓𝒐𝒑𝒐𝒔𝒂𝒍𝒔: ' + proposals  + '\n' + '𝑳𝒂𝒔𝒕 𝒗𝒊𝒆𝒘𝒆𝒅 𝒃𝒚 𝒄𝒍𝒊𝒆𝒏𝒕: ' + viewed_time  + '\n' + '𝑯𝒊𝒓𝒆𝒔: ' + hires  + '\n' + '𝑰𝒏𝒕𝒆𝒓𝒗𝒊𝒆𝒘𝒊𝒏𝒈: ' + interviews  + '\n' + '𝑰𝒏𝒗𝒊𝒕𝒆𝒔 𝒔𝒆𝒏𝒕: ' + invites_sent  + '\n' + '𝑼𝒏𝒂𝒏𝒔𝒘𝒆𝒓𝒆𝒅 𝒊𝒏𝒗𝒊𝒕𝒆𝒔: ' + unanswered_invites + '\n' + mark
-                    record = [f'{project_posted} from {posted_time}', project_title, project_price, client_location, posted_jobs, hire_rate, project_spent, member_since, proposals, interviews, invites_sent, unanswered_invites, project_skills, project_url.replace('URL: ', '')]
+                    message = project_title + '\n' + line + '\n' + '𝑷𝒓𝒊𝒄𝒆: ' + project_price + '\n' + '𝑷𝒐𝒔𝒕𝒆𝒅: ' + project_posted + ' from ' + posted_time + '\n' + line + '\n' '𝑷𝒓𝒐𝒋𝒆𝒄𝒕 𝑼𝑹𝑳: \n' + project_url + '\n'+ line + '\n' + '𝑳𝒐𝒄𝒂𝒕𝒊𝒐𝒏: ' + client_location + '\n' + '𝑻𝒐𝒕𝒂𝒍 𝑺𝒑𝒆𝒏𝒕: ' + project_spent + '\n' + '𝑴𝒆𝒎𝒃𝒆𝒓 𝑺𝒊𝒏𝒄𝒆:  ' + member_since + "\n" + line + '\n' + '𝑫𝒆𝒔𝒄𝒓𝒊𝒑𝒕𝒊𝒐𝒏: ' + '\n' + project_description + "\n" + line + '\n' + '𝑺𝒌𝒊𝒍𝒍𝒔: ' + '\n' + project_skills + '\n' + line + '\n' + '𝑷𝒓𝒐𝒑𝒐𝒔𝒂𝒍𝒔: ' + proposals  + '\n' + '𝑳𝒂𝒔𝒕 𝒗𝒊𝒆𝒘𝒆𝒅 𝒃𝒚 𝒄𝒍𝒊𝒆𝒏𝒕: ' + viewed_time  + '\n' + '𝑯𝒊𝒓𝒆𝒔: ' + hires  + '\n' + '𝑰𝒏𝒕𝒆𝒓𝒗𝒊𝒆𝒘𝒊𝒏𝒈: ' + interviews  + '\n' + '𝑰𝒏𝒗𝒊𝒕𝒆𝒔 𝒔𝒆𝒏𝒕: ' + invites_sent  + '\n' + '𝑼𝒏𝒂𝒏𝒔𝒘𝒆𝒓𝒆𝒅 𝒊𝒏𝒗𝒊𝒕𝒆𝒔: ' + unanswered_invites + '\n' + mark
+                    record = [f'{project_posted} from {posted_time}', project_title, project_price, client_location, project_spent, member_since, proposals, interviews, invites_sent, unanswered_invites, project_skills, project_url.replace('URL: ', '')]
                     worksheet.append_row(record)
                     await send_mail(message)
                     print(project_url)

@@ -67,7 +67,7 @@ async def send_mail(chat_id, content):
 async def monitor_upwork():
     total_projects = []
     while True:
-        try:
+        # try:
             file_path = 'upwork.html'
 
             try:
@@ -97,18 +97,26 @@ async def monitor_upwork():
 
                     project_record = [project_details[1], project_details[2], project_details[6], project_details[9], project_details[4], project_details[5], project_details[8], project_details[3]]
                     empty_record = ['', '', '', '', '', '', '', '.']
-                    if project_details[9] == 'Payment unverified':
-                        # await send_mail(TELEGRAM_GROUP_CHAT_ID, message)
-                        # worksheet2.append_row(empty_record)
-                        worksheet2.append_row(project_record)
-                    # else:
-                    # await send_mail(TELEGRAM_CHAT_ID, message)
-                    # worksheet2.append_row(project_record)
-                    else:
-                        # worksheet.append_row(empty_record)
+                    project_price = project_record[2]
+                    if project_price in ("Hourly", "Fixed"):
                         worksheet.append_row(project_record)
-                    print(project_record)
-                    print('\n')
+                    elif "Hourly:" in project_price:
+                        if float(project_price.split("-")[1].strip().replace("$", "")) > 20:
+                            worksheet.append_row(project_record)
+                    elif float(project_price.strip().replace("$", "").replace(",", "")) > 500:
+                        worksheet.append_row(project_record)
+                    # if project_details[9] == 'Payment unverified':
+                    #     # await send_mail(TELEGRAM_GROUP_CHAT_ID, message)
+                    #     # worksheet2.append_row(empty_record)
+                    #     worksheet2.append_row(project_record)
+                    # # else:
+                    # # await send_mail(TELEGRAM_CHAT_ID, message)
+                    # # worksheet2.append_row(project_record)
+                    # else:
+                    #     # worksheet.append_row(empty_record)
+                    # worksheet.append_row(project_record)
+                    # print(project_record)
+                    # print('\n')
                     time.sleep(1)
                 total_projects.append(project)
                 
@@ -117,9 +125,9 @@ async def monitor_upwork():
 
             await asyncio.sleep(1)  # Sleep for 5 seconds before the next check
 
-        except Exception as e:
-            print(f'Error: {e}')
-            await asyncio.sleep(60)  # Continue after a pause on error
+        # except Exception as e:
+        #     print(f'Error: {e}')
+        #     await asyncio.sleep(60)  # Continue after a pause on error
 
 def parse_project(div):
     """Extracts project details from a BeautifulSoup tag."""
