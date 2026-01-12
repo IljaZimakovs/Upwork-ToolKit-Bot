@@ -3,7 +3,7 @@ import asyncio
 import os
 # Load environment variables
 # Use os.getenv to retrieve environment variables
-TELEGRAM_TOKEN = "7644435390:AAExmo8L6ODq-ssFKHEjzpHDWMHMC9pOeMc"
+TELEGRAM_TOKEN = "8475510152:AAHi2Lxkm8whXd7MJkvgXtaAhofHk4HOYdQ"
 async def send_mail():
     print('send_mail')
     bot = telegram.Bot(TELEGRAM_TOKEN)
